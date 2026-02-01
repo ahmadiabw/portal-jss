@@ -10,7 +10,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { sendMessageToGemini } from '../services/geminiService';
 import { ChatMessage } from '../types';
 
-const AIChat: React.FC = () => {
+interface AIChatProps {
+  theme?: 'light' | 'dark';
+}
+
+const AIChat: React.FC<AIChatProps> = ({ theme = 'dark' }) => {
+  const isDark = theme === 'dark';
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'model', text: 'Selamat sejahtera! Saya MyJSS AI, pembantu maya Jabatan Sains Sosial IPGKT. Ada apa yang boleh saya bantu? 🇲🇾' }
@@ -54,14 +59,18 @@ const AIChat: React.FC = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="mb-4 w-[90vw] md:w-96 bg-[#001a33]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+            className={`mb-4 w-[90vw] md:w-96 backdrop-blur-2xl border rounded-2xl overflow-hidden shadow-2xl`}
+            style={{ 
+              backgroundColor: isDark ? 'rgba(0, 26, 51, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.1)'
+            }}
           >
-            <div className="bg-[#003366] p-4 flex justify-between items-center border-b border-white/10">
+            <div className="p-4 flex justify-between items-center border-b" style={{ backgroundColor: isDark ? '#003366' : '#F1F5F9', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.1)' }}>
               <div className="flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-red-500" />
-                <h3 className="font-heading font-bold text-white tracking-wider text-sm">MYJSS ASSISTANT</h3>
+                <GraduationCap className="w-5 h-5 text-[#EE2A24]" />
+                <h3 className={`font-heading font-bold tracking-wider text-sm ${isDark ? 'text-white' : 'text-[#0F172A]'}`}>MYJSS ASSISTANT</h3>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-white/50 hover:text-white">
+              <button onClick={() => setIsOpen(false)} className={`${isDark ? 'text-white/50 hover:text-white' : 'text-slate-400 hover:text-slate-900'}`}>
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -73,7 +82,9 @@ const AIChat: React.FC = () => {
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] p-3 rounded-xl text-sm ${
-                    msg.role === 'user' ? 'bg-red-600 text-white' : 'bg-white/10 text-gray-200'
+                    msg.role === 'user' 
+                      ? 'bg-[#EE2A24] text-white' 
+                      : isDark ? 'bg-white/10 text-gray-200' : 'bg-slate-100 text-slate-800'
                   }`}>
                     {msg.text}
                   </div>
@@ -81,28 +92,28 @@ const AIChat: React.FC = () => {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white/5 p-3 rounded-xl flex gap-1">
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className={`${isDark ? 'bg-white/5' : 'bg-slate-100'} p-3 rounded-xl flex gap-1`}>
+                    <span className="w-1.5 h-1.5 bg-[#EE2A24] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-1.5 h-1.5 bg-[#EE2A24] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 border-t" style={{ borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.1)' }}>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Tanya tentang program, pensyarah..."
-                  className="flex-1 bg-transparent text-white placeholder-white/20 text-sm focus:outline-none"
+                  placeholder="Tanya tentang program..."
+                  className={`flex-1 bg-transparent text-sm focus:outline-none ${isDark ? 'text-white placeholder-white/20' : 'text-slate-900 placeholder-slate-400'}`}
                 />
                 <button
                   onClick={handleSend}
                   disabled={isLoading || !input.trim()}
-                  className="bg-red-600 p-2 rounded-lg hover:bg-red-500 transition-colors disabled:opacity-50"
+                  className="bg-[#EE2A24] p-2 rounded-lg hover:bg-red-500 transition-colors disabled:opacity-50"
                 >
                   <Send className="w-4 h-4 text-white" />
                 </button>
@@ -116,7 +127,8 @@ const AIChat: React.FC = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg border border-white/20 z-50"
+        className="w-14 h-14 rounded-full bg-[#EE2A24] flex items-center justify-center shadow-lg border border-white/20 z-50"
+        data-hover="true"
       >
         {isOpen ? <X className="w-6 h-6 text-white" /> : <MessageCircle className="w-6 h-6 text-white" />}
       </motion.button>
