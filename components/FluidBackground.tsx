@@ -7,6 +7,10 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
+interface FluidBackgroundProps {
+  theme?: 'light' | 'dark';
+}
+
 const StarField = () => {
   const stars = useMemo(() => {
     return Array.from({ length: 20 }).map((_, i) => ({
@@ -50,14 +54,17 @@ const StarField = () => {
   );
 };
 
-const FluidBackground: React.FC = () => {
-  return (
-    <div className="fixed inset-0 -z-10 overflow-hidden bg-[#001a33]">
-      <StarField />
+const FluidBackground: React.FC<FluidBackgroundProps> = ({ theme = 'dark' }) => {
+  const isDark = theme === 'dark';
 
-      {/* Corporate Blue Blob */}
+  return (
+    <div className={`fixed inset-0 -z-10 overflow-hidden transition-colors duration-700`} style={{ backgroundColor: isDark ? '#001a33' : '#F8FAFC' }}>
+      {isDark && <StarField />}
+
+      {/* Primary Blob */}
       <motion.div
-        className="absolute top-[-10%] left-[-10%] w-[100vw] h-[100vw] bg-[#003366] rounded-full mix-blend-screen filter blur-[100px] opacity-40"
+        className={`absolute top-[-10%] left-[-10%] w-[100vw] h-[100vw] rounded-full mix-blend-multiply filter blur-[100px] opacity-30 transition-colors duration-700`}
+        style={{ backgroundColor: isDark ? '#003366' : '#E2E8F0' }}
         animate={{
           x: [0, 50, -25, 0],
           y: [0, -25, 25, 0],
@@ -65,9 +72,10 @@ const FluidBackground: React.FC = () => {
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Patriotic Red Blob */}
+      {/* Secondary Blob */}
       <motion.div
-        className="absolute top-[20%] right-[-20%] w-[90vw] h-[70vw] bg-[#EE2A24] rounded-full mix-blend-screen filter blur-[120px] opacity-10"
+        className={`absolute top-[20%] right-[-20%] w-[90vw] h-[70vw] rounded-full mix-blend-multiply filter blur-[120px] opacity-20 transition-colors duration-700`}
+        style={{ backgroundColor: isDark ? '#EE2A24' : '#FFEDD5' }}
         animate={{
           x: [0, -50, 25, 0],
           y: [0, 50, -25, 0],
@@ -76,7 +84,6 @@ const FluidBackground: React.FC = () => {
       />
 
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay pointer-events-none"></div>
-      <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/10 to-[#001a33] pointer-events-none" />
     </div>
   );
 };
